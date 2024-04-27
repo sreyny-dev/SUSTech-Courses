@@ -19,7 +19,11 @@ In this project, I have implemented follwing methods:
 
 ### FYI
 I use following command line to compile the code:
+This command line include AVX2 and Blas library
 ```c
 gcc -o main *.c -DWITH_AVX2 -mavx2 -lblas
+```
+This command line include AVX2, Blas library and Optimization flag -O3
+```c
 gcc -o main *.c -DWITH_AVX2 -mavx2 -lblas -O3
 ```
