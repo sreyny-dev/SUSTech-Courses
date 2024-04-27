@@ -56,7 +56,6 @@ Matrix *matmul_plain(const Matrix *mat1, const Matrix *mat2) {
 
     return result;
 }
-
 // change the order of j,k
 Matrix *matmul_swapJK(const Matrix *mat1, const Matrix *mat2) {
     if (mat1->cols != mat2->rows) {
@@ -155,6 +154,9 @@ Matrix *matmul_blas(const Matrix *mat1, const Matrix *mat2) {
 
     return result;
 }
+
+
+
 
 
 
