@@ -13,34 +13,62 @@ In this project, I have implemented follwing methods:
 - matmul_blas(): using blas library
 
   Below the brief ideas of each methods:
-- matmul():
-  ```c
-     Matrix *matmul_plain(const Matrix *mat1, const Matrix *mat2) {
-        if (mat1->cols != mat2->rows) {
-            fprintf(stderr, "Invalid matrix dimensions for multiplication\n");
-            return NULL;
-        }
-    
-        Matrix *result = create_matrix(mat1->rows, mat2->cols);
-    
-        for (size_t i = 0; i < mat1->rows; i++) {
-            for (size_t j = 0; j < mat2->cols; j++) {
-                float sum = 0.0f;
-                for (size_t k = 0; k < mat1->cols; k++) {
-                    sum += mat1->data[i * mat1->cols + k] * mat2->data[k * mat2->cols + j];
-                }
-                result->data[i * result->cols + j] = sum;
-            }
-        }
-    
-        return result;
+- matmul_plain():
+```c
+Matrix *matmul_plain(const Matrix *mat1, const Matrix *mat2) {
+    if (mat1->cols != mat2->rows) {
+        fprintf(stderr, "Invalid matrix dimensions for multiplication\n");
+        return NULL;
     }
+
+    Matrix *result = create_matrix(mat1->rows, mat2->cols);
+
+    for (size_t i = 0; i < mat1->rows; i++) {
+        for (size_t j = 0; j < mat2->cols; j++) {
+            float sum = 0.0f;
+            for (size_t k = 0; k < mat1->cols; k++) {
+                sum += mat1->data[i * mat1->cols + k] * mat2->data[k * mat2->cols + j];
+            }
+            result->data[i * result->cols + j] = sum;
+        }
+    }
+
+    return result;
+}
 ```
 
+-matmul_swapJK():
+```c
+Matrix *matmul_block(const Matrix *mat1, const Matrix *mat2) {
+    if (mat1->cols != mat2->rows) {
+        fprintf(stderr, "Invalid matrix dimensions for multiplication\n");
+        return NULL;
+    }
+    size_t block_size=32;
+    size_t rows = mat1->rows;
+    size_t cols = mat2->cols;
+    size_t common_dim = mat1->cols;
 
+    Matrix *result = create_matrix(rows, cols);
+
+    for (size_t ii = 0; ii < rows; ii += block_size) {
+        for (size_t jj = 0; jj < cols; jj += block_size) {
+            for (size_t kk = 0; kk < common_dim; kk += block_size) {
+                for (size_t i = ii; i < ii + block_size && i < rows; i++) {
+                    for (size_t j = jj; j < jj + block_size && j < cols; j++) {
+                        for (size_t k = kk; k < kk + block_size && k < common_dim; k++) {
+                            result->data[i * cols + j] += mat1->data[i * common_dim + k] * mat2->data[k * cols + j];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
+}
+```
 ## 3. Time Execution Without option O3
-
-
 
 ## 4. ime Execution Without option O3
 
