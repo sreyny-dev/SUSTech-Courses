@@ -11,7 +11,9 @@ In this project, I have implemented follwing methods:
 - matmul_block(): this method divides matrix into blocks for friendly cache use
 - matmul_improved(): using SIMD+OpenMp
 - matmul_blas(): using blas library
+  
 Below the brief ideas of each methods:
+
 **matmul_plain():**
 ```c
 Matrix *matmul_plain(const Matrix *mat1, const Matrix *mat2) {
