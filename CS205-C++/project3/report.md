@@ -149,13 +149,16 @@ Without optimizaion flag O3, the result provided as below:
 - for SIMD&OpenMP, can improve the speed significantly
 - Blas has the fastest speed  
 **for large size of mattrices 1024*1024,...**
-  - swapJK methods tends to be faster than plain and block methods
-  - Blas is still the best
+- swapJK methods tends to be faster than plain and block methods
+- Blas is still the best
 
 ## 4. Time Execution With option O3
 **As the size of matrices getting larger**
 - The fastest one is still Blas
 - but swapJK is faster than block , block is faster than SIMD&OpenMP
+- For 64Kx64K, I got memory allocation fail
+
+![memory_allocation_fail](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project3/img/img1.png)
 
 ## FYI
 Use following command line to compile the code:
