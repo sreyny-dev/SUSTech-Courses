@@ -149,9 +149,9 @@ Without optimizaion flag O3, the result provided as below:
 - plain methods and swapJK methods take almost same time to compile
 - block methods a bit longer time than plain and swapJK methods
 - for SIMD&OpenMP, can improve the speed significantly
-- Blas has the fastest speed  
+- Blas has the fastest speed
+   
 **for large size of mattrices 1024*1024,...**
-  
 - swapJK methods tends to be faster than plain and block methods
 - Blas is still the best
 
