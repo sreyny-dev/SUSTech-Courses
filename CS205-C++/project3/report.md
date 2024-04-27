@@ -1,5 +1,5 @@
 # Project 3: Improved Matrix Multiplication in C
-12113053 THA Sreyny
+**12113053 THA Sreyny**
 
 ## 1. Introduction
 Matrix multiplication, a very basic operation in linear algebra, plays an important role in deep learning.
