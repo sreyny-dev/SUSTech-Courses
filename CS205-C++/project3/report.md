@@ -143,10 +143,25 @@ Matrix *matmul_blas(const Matrix *mat1, const Matrix *mat2) {
 ```
 
 ## 3. Time Execution Without option O3
+Without optimizaion flag O3, the result provided as below:
 
-## 4. ime Execution Without option O3
+**for small size of matrices 16x16, 128x128**
 
-## 5. Analysis
+- plain methods and swapJK methods take almost same time to compile
+- block methods a bit longer time than plain and swapJK methods
+- for SIMD&Openmp, can improve the speed significantly
+- Blas has the fastest speed
+- 
+**for large size of mattrices 1024*1024,...**
+  
+  - swapJK methods tends to be faster than plain and block methods
+  - Blas is still the best
+
+## 4. Time Execution With option O3
+
+**As the size of matrices getting larger**
+- The fastest one is still Blas
+- but swapJK is faster than block , block is faster than SIMD&Openmp
 
 ## FYI
 I use following command line to compile the code:
