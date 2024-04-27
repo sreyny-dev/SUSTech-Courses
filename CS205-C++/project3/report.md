@@ -19,6 +19,7 @@ In this project, I have implemented follwing methods:
 
 ### FYI
 I use following command line to compile the code:
+
 This command line include AVX2 and Blas library
 ```c
 gcc -o main *.c -DWITH_AVX2 -mavx2 -lblas
