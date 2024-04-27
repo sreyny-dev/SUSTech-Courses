@@ -31,5 +31,5 @@ This command line include AVX2, Blas library and Optimization flag -O3
 gcc -o main *.c -DWITH_AVX2 -mavx2 -lblas -O3
 ```
 ## Reference
-1. Improving the performance of Matrix Multiplication [stackoverflow]([https://chat.openai.com/share/182f6445-acc3-4c6d-8467-190cbb2b3254](https://stackoverflow.com/questions/44375076/improving-the-performance-of-matrix-multiplication)).
-2. Matrix Multiplication: Optimizing the code from 6 hours to 1 sec (2021). [Meduim](Matrix Multiplication: Optimizing the code from 6 hours to 1 sec).
+1. Improving the performance of Matrix Multiplication [stackoverflow](https://stackoverflow.com/questions/44375076/improving-the-performance-of-matrix-multiplication).
+2. Matrix Multiplication: Optimizing the code from 6 hours to 1 sec (2021). [Meduim](https://vaibhaw-vipul.medium.com/matrix-multiplication-optimizing-the-code-from-6-hours-to-1-sec-70889d33dcfa).
