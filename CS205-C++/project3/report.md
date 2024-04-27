@@ -12,3 +12,14 @@ In this project, I have implemented follwing methods:
 - matmul_improved(): using SIMD+OpenMp
 - matmul_blas(): using blas library
 ### 3. Time Execution Comparation
+
+
+
+
+
+### FYI
+I use following command line to compile the code:
+```c
+gcc -o main *.c -DWITH_AVX2 -mavx2 -lblas
+gcc -o main *.c -DWITH_AVX2 -mavx2 -lblas -O3
+```
