@@ -15,26 +15,26 @@ In this project, I have implemented follwing methods:
   Below the brief ideas of each methods:
 - matmul():
   ```c
-Matrix *matmul_plain(const Matrix *mat1, const Matrix *mat2) {
-    if (mat1->cols != mat2->rows) {
-        fprintf(stderr, "Invalid matrix dimensions for multiplication\n");
-        return NULL;
-    }
-
-    Matrix *result = create_matrix(mat1->rows, mat2->cols);
-
-    for (size_t i = 0; i < mat1->rows; i++) {
-        for (size_t j = 0; j < mat2->cols; j++) {
-            float sum = 0.0f;
-            for (size_t k = 0; k < mat1->cols; k++) {
-                sum += mat1->data[i * mat1->cols + k] * mat2->data[k * mat2->cols + j];
-            }
-            result->data[i * result->cols + j] = sum;
+     Matrix *matmul_plain(const Matrix *mat1, const Matrix *mat2) {
+        if (mat1->cols != mat2->rows) {
+            fprintf(stderr, "Invalid matrix dimensions for multiplication\n");
+            return NULL;
         }
+    
+        Matrix *result = create_matrix(mat1->rows, mat2->cols);
+    
+        for (size_t i = 0; i < mat1->rows; i++) {
+            for (size_t j = 0; j < mat2->cols; j++) {
+                float sum = 0.0f;
+                for (size_t k = 0; k < mat1->cols; k++) {
+                    sum += mat1->data[i * mat1->cols + k] * mat2->data[k * mat2->cols + j];
+                }
+                result->data[i * result->cols + j] = sum;
+            }
+        }
+    
+        return result;
     }
-
-    return result;
-}
 ```
 ## 3. Time Execution Without option O3
 
