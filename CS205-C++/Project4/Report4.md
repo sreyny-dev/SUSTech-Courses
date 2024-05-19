@@ -27,19 +27,20 @@ Matrix<char> mat4(3, 3);    // Matrix of char
 ```
 
 **2. Memory Management:**
-The Matrix class properly allocates and deallocates memory for the data array using new[] and delete[] in the constructors and destructor, respectively. The move constructor and move assignment operator also handle the memory correctly by setting the data pointer of the source object to nullptr to prevent double deletion. In addition, the assignment operator (operator=) handles the case where the source and destination matrices are the same object by checking if (this == &other) before performing any operations.```cpp
+The Matrix class properly allocates and deallocates memory for the data array using new[] and delete[] in the constructors and destructor, respectively. The move constructor and move assignment operator also handle the memory correctly by setting the data pointer of the source object to nullptr to prevent double deletion. In addition, the assignment operator (operator=) handles the case where the source and destination matrices are the same object by checking if (this == &other) before performing any operations.
+```cpp
 Matrix::~Matrix() {
     delete[] data;
 }
 ```
+
 ```cpp
     Matrix& operator=(Matrix&& other) noexcept {
         if (this == &other) return *this;
         if (!is_submatrix) {
             delete[] data;
         }
-}
-```
+}```
 **3. Operation Overloading:**
 The Matrix class overloads operators such as assignment (=), equality (==), addition (+), subtraction (-), and multiplication (). 
 ```cpp
