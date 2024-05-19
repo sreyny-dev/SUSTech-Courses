@@ -123,3 +123,74 @@ const int& Matrix::operator()(size_t row, size_t col) const {
     return data[(row + rowOffset) * cols + (col + colOffset)];
 }
 ```
+## Part II: Result
+```cpp
+int main() {
+
+    Matrix<int> mat1(3, 3);
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 3; ++j) {
+            mat1(i, j) = i * 3.0 + j;
+        }
+    }
+    mat1.print();
+    Matrix<float> mat2(3, 3);
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 3; ++j) {
+            mat2(i, j) = 3.5f;
+        }
+    }
+    mat2.print();
+    Matrix<char> mat3(3, 3);
+    for (size_t i = 0; i < 3; ++i) {
+        for (size_t j = 0; j < 3; ++j) {
+            mat3(i, j) = 'A';
+        }
+    }
+    mat3.print();
+    std::cout<<"SubMat: "<<std::endl;
+    Matrix<int> submat = mat1.getSubmatrix(1, 1, 2, 2);
+    submat.print();
+    Matrix<int> result1 = mat1 + mat1;
+    std::cout<<"Result1: "<<std::endl;
+    result1.print();
+    Matrix<float> result2 = mat2 * mat2;
+    std::cout<<"Result2: "<<std::endl;
+    result2.print();
+    Matrix<char> result3 = mat3 + mat3;
+    std::cout<<"Result3: "<<std::endl;
+    result3.print();
+    bool isEqual = (mat1 == result1);
+    std::cout<<"isEqual: "<<isEqual<<std::endl;
+
+    return 0;
+}
+```
+**Output:**
+```cpp
+0 1 2
+3 4 5
+6 7 8
+3.5 3.5 3.5
+3.5 3.5 3.5
+3.5 3.5 3.5
+A A A
+A A A
+A A A
+SubMat:
+4 5
+7 8
+Result1:
+0 2 4
+6 8 10
+12 14 16
+Result2:
+36.75 36.75 36.75
+36.75 36.75 36.75
+36.75 36.75 36.75
+Result3:
+é é é
+é é é
+é é é
+isEqual: 0
+```
