@@ -14,6 +14,7 @@ private:
     size_t row_offset;
     size_t col_offset;
     Matrix* parent_matrix;
+    }
 }
 ```
 The typename T in the angle brackets (<>) is a placeholder for the actual type that will be provided when creating an instance of the Matrix class. This means that T can be any type, such as int, float, double, or even a user-defined type. When we create an instance of the Matrix class, we specify the type by providing the desired type in the angle brackets. For example:
