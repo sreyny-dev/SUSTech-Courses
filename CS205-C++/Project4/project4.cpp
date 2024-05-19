@@ -1,3 +1,4 @@
+```cpp
 #include <iostream>
 #include <stdexcept>
 #include <cstring>
@@ -227,3 +228,4 @@ int main() {
 
     return 0;
 }
+```
