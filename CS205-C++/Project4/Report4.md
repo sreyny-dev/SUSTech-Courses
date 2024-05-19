@@ -1,6 +1,26 @@
 # Project 4: A Class to Describe a Matrix
 **Sreyny THA-12113053**
-## Part I: Analysis
+## Part I: Implementation
+1. The Matrix class is defined as a template class, allowing matrices of different types (e.g., int, float, char) to be created.
+2. Private member variables:
+- rows and cols store the dimensions of the matrix.
+- data is a pointer to dynamically allocated memory that holds the matrix elements.
+- is_submatrix is a flag indicating whether the matrix is a submatrix.
+- parent_rows and parent_cols store the dimensions of the parent matrix (relevant only for submatrices).
+- parent_data is a pointer to the data of the parent matrix (relevant only for submatrices).
+3. The allocateMemory private member function is responsible for allocating memory for the matrix elements. It checks if the matrix has valid dimensions and then uses new[] to allocate an array of appropriate size.
+4. The public constructor takes the number of rows and columns as parameters and initializes the member variables. It also calls allocateMemory to allocate memory for the matrix elements.
+5. The destructor ~Matrix releases the memory allocated for the matrix elements using delete[]. However, it only performs the deletion if the matrix is not a submatrix (indicated by the is_submatrix flag).
+6. The copy constructor Matrix(const Matrix& other) creates a new matrix by copying the dimensions and data from another matrix. If the matrix being copied is a submatrix, it simply sets the data pointer to the source matrix's data pointer. Otherwise, it performs a deep copy of the data using std::memcpy.
+7. The copy assignment operator operator= assigns the values of one matrix to another. It first checks for self-assignment (this == &other) and returns early if true. It then releases the memory of the current matrix (if not a submatrix) and performs similar steps as in the copy constructor to copy the dimensions and data.
+8. The move constructor Matrix(Matrix&& other) noexcept takes ownership of an r-value reference to another matrix. It performs a shallow copy of the member variables and sets the source matrix's data pointer to nullptr to prevent double deletion.
+9. The move assignment operator operator=(Matrix&& other) noexcept is similar to the move constructor but also releases the memory of the current matrix (if not a submatrix) before performing the shallow copy.
+10. The operator() function allows accessing individual elements of the matrix using the parentheses notation. It takes row and column indices and returns a reference to the corresponding element. If the matrix is a submatrix, it accesses the element through the parent matrix's data pointer.
+11. The operator+, operator*, and operator- functions overload the respective arithmetic operators to perform element-wise addition, multiplication, and subtraction of matrices. They create a new matrix for the result and iterate over the elements of the matrices, applying the respective operation and storing the result in the new matrix.
+12. The operator== compares two matrices for equality. It checks if the dimensions of the matrices are the same and then iterates over the elements, returning false if any elements differ.
+13. The getSubmatrix function extracts a submatrix from the current matrix. It takes the starting row and column indices of the submatrix, as well as the desired number of rows and columns. It creates a new matrix object representing the submatrix and sets appropriate member variables to indicate its relationship to the parent matrix.
+14. The getRows and getCols functions return the number of rows and columns of the matrix, respectively.
+## Part II: Analysis
 **1. Support different data types:**
 Using Templates in C++ can support different types without explicitly specifying the type. In the case of the Matrix class, it is defined as a template class using the following syntax:
 ```cpp
@@ -125,7 +145,7 @@ const int& Matrix::operator()(size_t row, size_t col) const {
     return data[(row + rowOffset) * cols + (col + colOffset)];
 }
 ```
-## Part II: Result
+## Part III: Result
 ```cpp
 int main() {
 
