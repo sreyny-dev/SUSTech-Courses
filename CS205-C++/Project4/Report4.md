@@ -17,6 +17,7 @@ private:
 }
 ```
 The typename T in the angle brackets (<>) is a placeholder for the actual type that will be provided when creating an instance of the Matrix class. This means that T can be any type, such as int, float, double, or even a user-defined type. When we create an instance of the Matrix class, we specify the type by providing the desired type in the angle brackets. For example:
+
 ```cpp
 Matrix<int> mat1(3, 3);       // Matrix of integers
 Matrix<float> mat2(3, 3);     // Matrix of floats
