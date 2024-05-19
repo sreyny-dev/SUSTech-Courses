@@ -34,29 +34,59 @@ Matrix::~Matrix() {
 **Operation Overloading:**
 The Matrix class overloads operators such as assignment (=), equality (==), addition (+), subtraction (-), and multiplication (). 
 ```cpp
-Matrix Matrix::operator+(const Matrix& other) const {
-    if (rows != other.rows
-    || cols != other.cols) {
-        throw std::invalid_argument("Matrices must have the same dimensions for addition.");
-    }
-    Matrix result(rows, cols);
-    for (size_t i = 0; i < rows * cols; ++i) {
-        result.data[i] = data[i] + other.data[i];
-    }
-    return result;
-}
+    Matrix& operator=(Matrix&& other) noexcept {
+        if (this == &other) return *this;
+        if (!is_submatrix) {
+            delete[] data;
+        }
 
-Matrix Matrix::operator-(const Matrix& other) const {
-    if (rows != other.rows || cols != other.cols) {
-        throw std::invalid_argument("Matrices must have the same dimensions for subtraction.");
+        rows = other.rows;
+        cols = other.cols;
+        data = other.data;
+        is_submatrix = other.is_submatrix;
+        row_offset = other.row_offset;
+        col_offset = other.col_offset;
+        parent_matrix = other.parent_matrix;
+
+        other.data = nullptr;
+        return *this;
     }
-    Matrix result(rows, cols);
-    for (size_t i = 0; i < rows * cols; ++i) {
-        result.data[i] = data[i] - other.data[i];
-    }
-    return result;
 }
 ```
+```cpp
+    Matrix operator*(const Matrix& other) const {
+        if (cols != other.rows) {
+            throw std::invalid_argument("Number of columns in the first matrix must match the number of rows in the second matrix for multiplication");
+        }
+        Matrix result(rows, other.cols);
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < other.cols; ++j) {
+                result(i, j) = 0;
+                for (size_t k = 0; k < cols; ++k) {
+                    result(i, j) += (*this)(i, k) * other(k, j);
+                }
+            }
+        }
+        return result;
+    }
+```
+```cpp
+    bool operator==(const Matrix& other) const {
+        if (rows != other.rows || cols != other.cols) {
+            return false;
+        }
+
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < cols; ++j) {
+                if ((*this)(i, j) != other(i, j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+```
+
 **Region of Interest (ROI):**
 The ROI allows sharing the same memory between two Matrix objects, where one object represents the entire matrix, and the other object represents a subregion of the matrix.
 The ROI is implemented using the following data members in the Matrix class: isROI, rowOffset, colOffset, roiRows, and roiCols. The setROI() function sets the ROI parameters.
