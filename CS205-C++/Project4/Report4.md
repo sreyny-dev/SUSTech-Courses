@@ -1,7 +1,28 @@
 # Project 4: A Class to Describe a Matrix
 **Sreyny THA-12113053**
 ## Part I: Analysis
-
+**Support different data types:**
+Using Templates in C++ can support different types without explicitly specifying the type. In the case of the Matrix class, it is defined as a template class using the following syntax:
+```cpp
+template <typename T>
+class Matrix {
+private:
+    size_t rows;
+    size_t cols;
+    T* data;
+    bool is_submatrix;
+    size_t row_offset;
+    size_t col_offset;
+    Matrix* parent_matrix;
+}
+```
+The typename T in the angle brackets (<>) is a placeholder for the actual type that will be provided when creating an instance of the Matrix class. This means that T can be any type, such as int, float, double, or even a user-defined type. When we create an instance of the Matrix class, we specify the type by providing the desired type in the angle brackets. For example:
+```cpp
+Matrix<int> mat1(3, 3);       // Matrix of integers
+Matrix<float> mat2(3, 3);     // Matrix of floats
+Matrix<double> mat3(3, 3);    // Matrix of doubles
+Matrix<char> mat4(3, 3);    // Matrix of char
+```
 
 **Memory Management:**
 The Matrix class uses dynamic memory allocation through the "new" operator to allocate memory for the matrix elements. To avoid memory leaks, the class implement memory deallocation using the "delete" operator in the destructor.
@@ -51,5 +72,14 @@ void Matrix::setROI(size_t rowOffset, size_t colOffset, size_t roiRows, size_t r
     this->roiRows = roiRows;
     this->roiCols = roiCols;
     isROI = true;
+}
+```
+```cpp
+int& Matrix::operator()(size_t row, size_t col) {
+    return data[(row + rowOffset) * cols + (col + colOffset)];
+}
+
+const int& Matrix::operator()(size_t row, size_t col) const {
+    return data[(row + rowOffset) * cols + (col + colOffset)];
 }
 ```
