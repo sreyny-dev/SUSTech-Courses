@@ -1,7 +1,7 @@
 # Project 4: A Class to Describe a Matrix
-**1. Sreyny THA-12113053**
+**Sreyny THA-12113053**
 ## Part I: Analysis
-**Support different data types:**
+**1. Support different data types:**
 Using Templates in C++ can support different types without explicitly specifying the type. In the case of the Matrix class, it is defined as a template class using the following syntax:
 ```cpp
 template <typename T>
