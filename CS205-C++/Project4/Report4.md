@@ -40,9 +40,11 @@ Matrix::~Matrix() {
         if (!is_submatrix) {
             delete[] data;
         }
-}```
+}
+```
 **3. Operation Overloading:**
 The Matrix class overloads operators such as assignment (=), equality (==), addition (+), subtraction (-), and multiplication (). 
+
 ```cpp
     Matrix& operator=(Matrix&& other) noexcept {
         if (this == &other) return *this;
