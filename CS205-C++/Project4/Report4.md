@@ -1,5 +1,5 @@
 # Project 4: A Class to Describe a Matrix
-**Sreyny THA-12113053**
+**1. Sreyny THA-12113053**
 ## Part I: Analysis
 **Support different data types:**
 Using Templates in C++ can support different types without explicitly specifying the type. In the case of the Matrix class, it is defined as a template class using the following syntax:
@@ -24,14 +24,20 @@ Matrix<double> mat3(3, 3);    // Matrix of doubles
 Matrix<char> mat4(3, 3);    // Matrix of char
 ```
 
-**Memory Management:**
-The Matrix class uses dynamic memory allocation through the "new" operator to allocate memory for the matrix elements. To avoid memory leaks, the class implement memory deallocation using the "delete" operator in the destructor.
-```cpp
+**2. Memory Management:**
+The Matrix class properly allocates and deallocates memory for the data array using new[] and delete[] in the constructors and destructor, respectively. The move constructor and move assignment operator also handle the memory correctly by setting the data pointer of the source object to nullptr to prevent double deletion. In addition, the assignment operator (operator=) handles the case where the source and destination matrices are the same object by checking if (this == &other) before performing any operations.```cpp
 Matrix::~Matrix() {
     delete[] data;
 }
 ```
-**Operation Overloading:**
+```cpp
+    Matrix& operator=(Matrix&& other) noexcept {
+        if (this == &other) return *this;
+        if (!is_submatrix) {
+            delete[] data;
+        }
+```
+**3. Operation Overloading:**
 The Matrix class overloads operators such as assignment (=), equality (==), addition (+), subtraction (-), and multiplication (). 
 ```cpp
     Matrix& operator=(Matrix&& other) noexcept {
@@ -87,7 +93,7 @@ The Matrix class overloads operators such as assignment (=), equality (==), addi
     }
 ```
 
-**Region of Interest (ROI):**
+**4. Region of Interest (ROI):**
 The ROI allows sharing the same memory between two Matrix objects, where one object represents the entire matrix, and the other object represents a subregion of the matrix.
 The ROI is implemented using the following data members in the Matrix class: isROI, rowOffset, colOffset, roiRows, and roiCols. The setROI() function sets the ROI parameters.
 
