@@ -1,3 +1,0 @@
-D:/SUSTech-Courses/cmake-build-debug/CMakeFiles/SUSTech_Courses.dir
-D:/SUSTech-Courses/cmake-build-debug/CMakeFiles/edit_cache.dir
-D:/SUSTech-Courses/cmake-build-debug/CMakeFiles/rebuild_cache.dir
