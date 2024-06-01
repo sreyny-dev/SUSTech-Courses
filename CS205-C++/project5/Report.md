@@ -8,6 +8,5 @@ GPUs have very small Arithmetic Logic Units (ALUs) compared to the somewhat larg
 **Architecture of CUDA**
 ![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/Cuda.jpg)
 <p align="center">
-  ## Centered Heading
 credit: geeksforgeeks.org
 </p>
