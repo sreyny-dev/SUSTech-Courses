@@ -1,36 +1,23 @@
-<<<<<<< Updated upstream
 @ -1,22 +1,57 @@
 # Project 3: Improved Matrix Multiplication in C
 # Project 5: GPU Acceleration with CUDA
 **12113053 THA Sreyny**
 ## **Introduction**
-=======
-# Project 5: GPU Acceleration with CUDA
-**12113053 THA Sreyny**
->>>>>>> Stashed changes
 ## **I. Introduction**
 Why do we need CUDA?
 GPUs are designed to perform high-speed parallel computations to display graphics such as games. Use available CUDA resources. It provides 30-100x speed-up over other microprocessors for some applications.
 GPUs have very small Arithmetic Logic Units (ALUs) compared to the somewhat larger CPUs. This allows for many parallel calculations, such as calculating the color for each pixel on the screen, etc.
 
-<<<<<<< Updated upstream
 **Architecture of CUDA**
 **Architecture of CUDA Design**
 
 ![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/Cuda.jpg)
-=======
-**Architecture of CUDA Design**
-
->>>>>>> Stashed changes
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\Cuda.jpg")
 <p align="center">
 credit: geeksforgeeks.org
 </p>
 
-<<<<<<< Updated upstream
 ## Task1
-=======
->>>>>>> Stashed changes
 The diagram shows 16 Streaming Multiprocessors (SMs), each with 8 Streaming Processors (SPs), totaling 128 SPs. Each SP includes a MAD (Multiplication and Addition) unit and a multiplication unit.
 
 Key points:
@@ -70,10 +57,7 @@ These features contribute to the massively parallel nature of these processors.
 
 There two methods to calculate A=aB+b. One uses CPU and another one uses GPU.
 
-<<<<<<< Updated upstream
 ```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 bool addCPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 {
@@ -82,10 +66,7 @@ bool addCPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 }
 ```
 The CUDA kernel for performing the same operation on the GPU. Each thread processes one element of the array.
-<<<<<<< Updated upstream
 ```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 __global__ void addKernel(const float * input1, const float * input2, float * output, size_t len, float a, float b)
 {
@@ -94,10 +75,7 @@ __global__ void addKernel(const float * input1, const float * input2, float * ou
         output[i] = input1[i] * a + b;
 }
 ```
-<<<<<<< Updated upstream
 ```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 {
@@ -106,21 +84,15 @@ bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 }
 ```
 ### Result
-<<<<<<< Updated upstream
 ![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/matrixAdd.png)
 ## Task 2
-=======
->>>>>>> Stashed changes
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\matrixAdd.png")
 
 Based on the result, when using CUDA to calculate B=aA+b, it can execute more than 2 times faster than normal CPU calculation for matrix size of 4096.
 
 ## **III. Task 2**
 Compare the matrix multiplication using openBlas and cuBlas.
-<<<<<<< Updated upstream
 ```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 void matrixMultiplyOpenBLAS(int N) {
     float *A = new float[N * N];
@@ -129,10 +101,7 @@ void matrixMultiplyOpenBLAS(int N) {
     delete[] C;
 }
 ```
-<<<<<<< Updated upstream
 ```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 void matrixMultiplyCuBLAS(int N) {
     float *h_A = new float[N * N];
@@ -141,19 +110,13 @@ void matrixMultiplyCuBLAS(int N) {
 }
 ```
 **Result**
-<<<<<<< Updated upstream
 ![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/cublas.png)
-=======
->>>>>>> Stashed changes
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\cublas.png")
 The result shows that cuBlas is about 60 times faster than openBlas for matrix size of 4096 with -O3 flag.
 ### Advantages and disadvantages of openBlas
 **Advantages:**
-<<<<<<< Updated upstream
 - The code is simple, without the need for device memory management.
 - Runs on any system without the need for a compatible GPU.
-=======
->>>>>>> Stashed changes
 - The code is simple, without the need for device memory management like GPU.
 - Runs on any operating system without the need for a compatible GPU.
 
@@ -171,6 +134,7 @@ The result shows that cuBlas is about 60 times faster than openBlas for matrix s
 ### Performence Comparison
 - OpenBLAS will generally be slower, especially for large matrices, due to the limited computational power and memory bandwidth of the CPU.
 - cuBLAS leverages the massive parallelism and high memory bandwidth of the GPU, offering much faster execution for large matrices.
+  **Scalability:**
 - OpenBLAS performance scales poorly with matrix size compared to cuBLAS.
 - cuBLAS scales much better, efficiently handling larger matrices due to the GPU's parallel architecture.
 
