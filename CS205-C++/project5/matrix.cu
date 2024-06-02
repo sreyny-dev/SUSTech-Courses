@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <sys/time.h>
+#include <cuda_runtime.h>
 
 #define TIME_START gettimeofday(&t_start, NULL);
 #define TIME_END(name)    gettimeofday(&t_end, NULL); \
@@ -12,7 +13,7 @@ typedef struct
     size_t rows;
     size_t cols;
     float * data; // CPU memory
-    float * data_device; //GPU mememory
+    float * data_device; //GPU memory
 } Matrix;
 
 Matrix * createMatrix(size_t r, size_t c)
@@ -37,7 +38,7 @@ Matrix * createMatrix(size_t r, size_t c)
         fprintf(stderr, "Allocate host memory failed.\n");
         goto ERR_TAG;
     }
-    if (cudaMalloc (&p->data_device, sizeof(float) * len) != cudaSuccess)
+    if (cudaMalloc(&p->data_device, sizeof(float) * len) != cudaSuccess)
     {
         fprintf(stderr, "Allocate device memory failed.\n");
         goto ERR_TAG;
@@ -60,6 +61,7 @@ void freeMatrix(Matrix ** pp)
     }
     *pp = NULL;
 }
+
 // a simple function to set all elements to the same value
 bool setMatrix(Matrix * pMat, float val)
 {
@@ -75,19 +77,16 @@ bool setMatrix(Matrix * pMat, float val)
     return true;
 }
 
-
 bool addCPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 {
-    if( pMat1 == NULL
-        || pMat2 == NULL
-            )
+    if( pMat1 == NULL || pMat2 == NULL)
     {
         fprintf(stderr, "Null pointer.\n");
         return false;
     }
     if (pMat1->rows != pMat2->rows || pMat1->cols != pMat2->cols)
     {
-        fprintf(stderr, "The 2 matrics are not in the same size.\n");
+        fprintf(stderr, "The 2 matrices are not in the same size.\n");
         return false;
     }
     size_t len = pMat1->rows * pMat1->cols;
@@ -105,15 +104,14 @@ __global__ void addKernel(const float * input1, const float * input2, float * ou
 
 bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 {
-    if( pMat1 == NULL
-        || pMat2 == NULL)
+    if( pMat1 == NULL || pMat2 == NULL)
     {
         fprintf(stderr, "Null pointer.\n");
         return false;
     }
     if (pMat1->rows != pMat2->rows || pMat1->cols != pMat2->cols)
     {
-        fprintf(stderr, "The 2 matrics are not in the same size.\n");
+        fprintf(stderr, "The 2 matrices are not in the same size.\n");
         return false;
     }
 
@@ -121,7 +119,8 @@ bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
     size_t len = pMat1->rows * pMat1->cols;
 
     cudaMemcpy(pMat1->data_device, pMat1->data, sizeof(float)*len, cudaMemcpyHostToDevice);
-    addKernel<<<(len+255)/256, 256>>>(pMat1->data_device, pMat2->data_device, pMat2->data_device, len, a, b);    if ((ecode = cudaGetLastError()) != cudaSuccess)
+    addKernel<<<(len+255)/256, 256>>>(pMat1->data_device, pMat2->data_device, pMat2->data_device, len, a, b);
+    if ((ecode = cudaGetLastError()) != cudaSuccess)
     {
         fprintf(stderr, "CUDA Error: %s\n", cudaGetErrorString(ecode));
         return false;
@@ -133,37 +132,54 @@ bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 
 int main()
 {
-
     struct timeval t_start, t_end;
     double elapsedTime = 0;
 
     int dev_count = 0;
-    int dev_id = 0;
     cudaGetDeviceCount(&dev_count);
-    cudaSetDevice(2);
+    if (dev_count == 0) {
+        fprintf(stderr, "No CUDA devices found.\n");
+        return -1;
+    }
+
+    int dev_id = 0; // Set to a valid device ID
+    if (dev_id >= dev_count) {
+        fprintf(stderr, "Invalid device ID %d. Only %d devices available.\n", dev_id, dev_count);
+        return -1;
+    }
+
+    cudaSetDevice(dev_id);
     cudaGetDevice(&dev_id);
-    printf("You have %d cuda devices.\n", dev_count);
+    printf("You have %d CUDA devices.\n", dev_count);
     printf("You are using device %d.\n", dev_id);
 
     Matrix * pMat1 = createMatrix(4096, 4096);
     Matrix * pMat2 = createMatrix(4096, 4096);
     Matrix * pMat3 = createMatrix(4096, 4096);
 
+    if (pMat1 == NULL || pMat2 == NULL || pMat3 == NULL) {
+        fprintf(stderr, "Matrix creation failed.\n");
+        return -1;
+    }
+
     setMatrix(pMat1, 1.0f);
 
-    float a=2.0f;
-    float b=3.0f;
-    TIME_START
-    addCPU(pMat1, pMat2, a,b);
-    TIME_END(addCPU)
-    printf("  Result = [%.1f, ..., %.1f]\n", pMat2->data[0], pMat2->data[pMat2->rows*pMat2->cols-1]);
+    float a = 2.0f;
+    float b = 3.0f;
 
     TIME_START
-    addGPU(pMat1, pMat2, a,b);
+    addCPU(pMat1, pMat2, a, b);
+    TIME_END(addCPU)
+    printf("  Result = [%.1f, ..., %.1f]\n", pMat2->data[0], pMat2->data[pMat2->rows * pMat2->cols - 1]);
+
+    TIME_START
+    addGPU(pMat1, pMat2, a, b);
     TIME_END(addGPU)
-    printf("  Result = [%.1f, ..., %.1f]\n", pMat2->data[0], pMat2->data[pMat2->rows*pMat2->cols-1]);
+    printf("  Result = [%.1f, ..., %.1f]\n", pMat2->data[0], pMat2->data[pMat2->rows * pMat2->cols - 1]);
 
     freeMatrix(&pMat1);
     freeMatrix(&pMat2);
+    freeMatrix(&pMat3);
+
     return 0;
 }
