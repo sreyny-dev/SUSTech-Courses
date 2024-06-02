@@ -153,6 +153,7 @@ void matrixMultiplyCuBLAS(int N) {
 **Advantages:**
 - The code is simple, without the need for device memory management.
 - Runs on any system without the need for a compatible GPU.
+- 
 **Disadvantages:**
 - Constrained by the computational power and memory bandwidth of the CPU.
 - Not suitable for very large matrices or high-performance computing tasks requiring the power of a GPU.
@@ -160,6 +161,7 @@ void matrixMultiplyCuBLAS(int N) {
 **Advantages:**
 - Utilizes the parallel processing power of the GPU, significantly speeding up matrix multiplication for large matrices.
 - Suitable for large-scale computations and high-performance computing tasks.
+- 
 **Disadvantages:**
 - Requires careful management of device memory, including allocation, data transfer, and deallocation.
 - Requires a compatible GPU and appropriate drivers, limiting portability to systems with the necessary hardware.
