@@ -1,56 +1,82 @@
 #include <iostream>
+#include <chrono>
+
+#include <openblas/cblas.h>
+
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
 
-void checkCudaErrors(cudaError_t result) {
-    if (result != cudaSuccess) {
-        std::cerr << "CUDA Runtime Error: " << cudaGetErrorString(result) << std::endl;
-        exit(-1);
+void matrixMultiplyOpenBLAS(int N) {
+    float *A = new float[N * N];
+    float *B = new float[N * N];
+    float *C = new float[N * N];
+
+    for (int i = 0; i < N * N; ++i) {
+        A[i] = static_cast<float>(rand()) / RAND_MAX;
+        B[i] = static_cast<float>(rand()) / RAND_MAX;
+        C[i] = 0.0f;
     }
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, N, N, N, 1.0f, A, N, B, N, 0.0f, C, N);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+    std::cout << "OpenBLAS: " << duration.count() << " seconds" << std::endl;
+
+    delete[] A;
+    delete[] B;
+    delete[] C;
 }
 
-void checkCublasErrors(cublasStatus_t result) {
-    if (result != CUBLAS_STATUS_SUCCESS) {
-        std::cerr << "cuBLAS Error: " << result << std::endl;
-        exit(-1);
-    }
-}
+void matrixMultiplyCuBLAS(int N) {
+    float *h_A = new float[N * N];
+    float *h_B = new float[N * N];
+    float *h_C = new float[N * N];
 
-int main() {
-    const int N = 3;
-    float h_A[N][N] = { {1.0f, 2.0f, 3.0f}, {4.0f, 5.0f, 6.0f}, {7.0f, 8.0f, 9.0f} };
-    float h_B[N][N] = { {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f} };
-    float h_C[N][N];
+    for (int i = 0; i < N * N; ++i) {
+        h_A[i] = static_cast<float>(rand()) / RAND_MAX;
+        h_B[i] = static_cast<float>(rand()) / RAND_MAX;
+        h_C[i] = 0.0f;
+    }
 
     float *d_A, *d_B, *d_C;
+    cudaMalloc((void**)&d_A, N * N * sizeof(float));
+    cudaMalloc((void**)&d_B, N * N * sizeof(float));
+    cudaMalloc((void**)&d_C, N * N * sizeof(float));
+
+    cudaMemcpy(d_A, h_A, N * N * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, N * N * sizeof(float), cudaMemcpyHostToDevice);
+
     cublasHandle_t handle;
+    cublasCreate(&handle);
 
-    checkCudaErrors(cudaMalloc(&d_A, N * N * sizeof(float)));
-    checkCudaErrors(cudaMalloc(&d_B, N * N * sizeof(float)));
-    checkCudaErrors(cudaMalloc(&d_C, N * N * sizeof(float)));
+    auto start = std::chrono::high_resolution_clock::now();
 
-    checkCudaErrors(cudaMemcpy(d_A, h_A, N * N * sizeof(float), cudaMemcpyHostToDevice));
-    checkCudaErrors(cudaMemcpy(d_B, h_B, N * N * sizeof(float), cudaMemcpyHostToDevice));
-
-    checkCublasErrors(cublasCreate(&handle));
     const float alpha = 1.0f;
     const float beta = 0.0f;
-    checkCublasErrors(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N, &alpha, d_A, N, d_B, N, &beta, d_C, N));
+    cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N, &alpha, d_A, N, d_B, N, &beta, d_C, N);
 
-    checkCudaErrors(cudaMemcpy(h_C, d_C, N * N * sizeof(float), cudaMemcpyDeviceToHost));
-
-    std::cout << "Result matrix C = A * B:" << std::endl;
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            std::cout << h_C[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+    std::cout << "cuBLAS: " << duration.count() << " seconds" << std::endl;
 
     cublasDestroy(handle);
     cudaFree(d_A);
     cudaFree(d_B);
     cudaFree(d_C);
+    delete[] h_A;
+    delete[] h_B;
+    delete[] h_C;
+}
+
+int main() {
+    int N = 4096;
+    std::cout << "Matrix multiplication with OpenBLAS and cuBLAS for " << N << "x" << N << " matrices\n";
+
+    matrixMultiplyOpenBLAS(N);
+    matrixMultiplyCuBLAS(N);
 
     return 0;
 }

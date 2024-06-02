@@ -87,7 +87,7 @@ bool addCPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
     }
     if (pMat1->rows != pMat2->rows || pMat1->cols != pMat2->cols)
     {
-        fprintf(stderr, "The 3 matrics are not in the same size.\n");
+        fprintf(stderr, "The 2 matrics are not in the same size.\n");
         return false;
     }
     size_t len = pMat1->rows * pMat1->cols;
