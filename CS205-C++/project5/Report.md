@@ -1,36 +1,18 @@
-<<<<<<< Updated upstream
-@ -1,22 +1,57 @@
-# Project 3: Improved Matrix Multiplication in C
 # Project 5: GPU Acceleration with CUDA
 **12113053 THA Sreyny**
-## **Introduction**
-=======
-# Project 5: GPU Acceleration with CUDA
-**12113053 THA Sreyny**
->>>>>>> Stashed changes
+
 ## **I. Introduction**
 Why do we need CUDA?
-GPUs are designed to perform high-speed parallel computations to display graphics such as games. Use available CUDA resources. It provides 30-100x speed-up over other microprocessors for some applications.
+
 GPUs have very small Arithmetic Logic Units (ALUs) compared to the somewhat larger CPUs. This allows for many parallel calculations, such as calculating the color for each pixel on the screen, etc.
 
-<<<<<<< Updated upstream
-**Architecture of CUDA**
 **Architecture of CUDA Design**
 
-![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/Cuda.jpg)
-=======
-**Architecture of CUDA Design**
-
->>>>>>> Stashed changes
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\Cuda.jpg")
 <p align="center">
 credit: geeksforgeeks.org
 </p>
 
-<<<<<<< Updated upstream
-## Task1
-=======
->>>>>>> Stashed changes
 The diagram shows 16 Streaming Multiprocessors (SMs), each with 8 Streaming Processors (SPs), totaling 128 SPs. Each SP includes a MAD (Multiplication and Addition) unit and a multiplication unit.
 
 Key points:
@@ -70,105 +52,171 @@ These features contribute to the massively parallel nature of these processors.
 
 There two methods to calculate A=aB+b. One uses CPU and another one uses GPU.
 
-<<<<<<< Updated upstream
-```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 bool addCPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 {
-    if( pMat1 == NULL
-@ -38,7 +73,7 @@ bool addCPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
+    if( pMat1 == NULL || pMat2 == NULL)
+    {
+        fprintf(stderr, "Null pointer.\n");
+        return false;
+    }
+    if (pMat1->rows != pMat2->rows || pMat1->cols != pMat2->cols)
+    {
+        fprintf(stderr, "The 2 matrices are not in the same size.\n");
+        return false;
+    }
+    size_t len = pMat1->rows * pMat1->cols;
+    for (int i = 0; i < len; i++)
+        pMat2->data[i] = pMat1->data[i] * a + b;
+    return true;
 }
 ```
 The CUDA kernel for performing the same operation on the GPU. Each thread processes one element of the array.
-<<<<<<< Updated upstream
-```cu
-=======
->>>>>>> Stashed changes
+
 ```cpp
 __global__ void addKernel(const float * input1, const float * input2, float * output, size_t len, float a, float b)
 {
     int i = blockDim.x * blockIdx.x + threadIdx.x;
-@ -46,7 +81,7 @@ __global__ void addKernel(const float * input1, const float * input2, float * ou
+    if(i < len)
         output[i] = input1[i] * a + b;
 }
 ```
-<<<<<<< Updated upstream
-```cu
-=======
->>>>>>> Stashed changes
+
 ```cpp
 bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
 {
-    if( pMat1 == NULL
-@ -76,10 +111,13 @@ bool addGPU(const Matrix * pMat1, Matrix * pMat2, float a, float b)
+    if( pMat1 == NULL || pMat2 == NULL)
+    {
+        fprintf(stderr, "Null pointer.\n");
+        return false;
+    }
+    if (pMat1->rows != pMat2->rows || pMat1->cols != pMat2->cols)
+    {
+        fprintf(stderr, "The 2 matrices are not in the same size.\n");
+        return false;
+    }
+
+    cudaError_t ecode = cudaSuccess;
+    size_t len = pMat1->rows * pMat1->cols;
+
+    cudaMemcpy(pMat1->data_device, pMat1->data, sizeof(float)*len, cudaMemcpyHostToDevice);
+    addKernel<<<(len+255)/256, 256>>>(pMat1->data_device, pMat2->data_device, pMat2->data_device, len, a, b);
+    if ((ecode = cudaGetLastError()) != cudaSuccess)
+    {
+        fprintf(stderr, "CUDA Error: %s\n", cudaGetErrorString(ecode));
+        return false;
+    }
+    cudaMemcpy(pMat2->data, pMat2->data_device, sizeof(float)*len, cudaMemcpyDeviceToHost);
+
+    return true;
 }
 ```
 ### Result
-<<<<<<< Updated upstream
-![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/matrixAdd.png)
-## Task 2
-=======
->>>>>>> Stashed changes
+
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\matrixAdd.png")
 
 Based on the result, when using CUDA to calculate B=aA+b, it can execute more than 2 times faster than normal CPU calculation for matrix size of 4096.
 
 ## **III. Task 2**
 Compare the matrix multiplication using openBlas and cuBlas.
-<<<<<<< Updated upstream
-```cu
-=======
->>>>>>> Stashed changes
 ```cpp
 void matrixMultiplyOpenBLAS(int N) {
     float *A = new float[N * N];
     float *B = new float[N * N];
-@ -104,7 +142,7 @@ void matrixMultiplyOpenBLAS(int N) {
+    float *C = new float[N * N];
+
+    for (int i = 0; i < N * N; ++i) {
+        A[i] = static_cast<float>(rand()) / RAND_MAX;
+        B[i] = static_cast<float>(rand()) / RAND_MAX;
+        C[i] = 0.0f;
+    }
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    cblas_sgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, N, N, N, 1.0f, A, N, B, N, 0.0f, C, N);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+    std::cout << "OpenBLAS: " << duration.count() << " seconds" << std::endl;
+
+    delete[] A;
+    delete[] B;
     delete[] C;
 }
 ```
-<<<<<<< Updated upstream
-```cu
-=======
->>>>>>> Stashed changes
+
 ```cpp
 void matrixMultiplyCuBLAS(int N) {
     float *h_A = new float[N * N];
     float *h_B = new float[N * N];
-@ -147,11 +185,13 @@ void matrixMultiplyCuBLAS(int N) {
+    float *h_C = new float[N * N];
+
+    for (int i = 0; i < N * N; ++i) {
+        h_A[i] = static_cast<float>(rand()) / RAND_MAX;
+        h_B[i] = static_cast<float>(rand()) / RAND_MAX;
+        h_C[i] = 0.0f;
+    }
+
+    float *d_A, *d_B, *d_C;
+    cudaMalloc((void**)&d_A, N * N * sizeof(float));
+    cudaMalloc((void**)&d_B, N * N * sizeof(float));
+    cudaMalloc((void**)&d_C, N * N * sizeof(float));
+
+    cudaMemcpy(d_A, h_A, N * N * sizeof(float), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_B, h_B, N * N * sizeof(float), cudaMemcpyHostToDevice);
+
+    cublasHandle_t handle;
+    cublasCreate(&handle);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    const float alpha = 1.0f;
+    const float beta = 0.0f;
+    cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, N, N, &alpha, d_A, N, d_B, N, &beta, d_C, N);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+    std::cout << "cuBLAS: " << duration.count() << " seconds" << std::endl;
+
+    cublasDestroy(handle);
+    cudaFree(d_A);
+    cudaFree(d_B);
+    cudaFree(d_C);
+    delete[] h_A;
+    delete[] h_B;
+    delete[] h_C;
 }
+
 ```
 **Result**
-<<<<<<< Updated upstream
-![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/cublas.png)
-=======
->>>>>>> Stashed changes
+
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\cublas.png")
+
 The result shows that cuBlas is about 60 times faster than openBlas for matrix size of 4096 with -O3 flag.
-### Advantages and disadvantages of openBlas
+
+### **Advantages and disadvantages of openBlas**
 **Advantages:**
-<<<<<<< Updated upstream
+
 - The code is simple, without the need for device memory management.
 - Runs on any system without the need for a compatible GPU.
-=======
->>>>>>> Stashed changes
 - The code is simple, without the need for device memory management like GPU.
 - Runs on any operating system without the need for a compatible GPU.
 
 **Disadvantages:**
 - Constrained by the computational power and memory bandwidth of the CPU.
 - Not suitable for very large matrices or high-performance computing tasks requiring the power of a GPU.
-@ -159,12 +199,176 @@ void matrixMultiplyCuBLAS(int N) {
+
+### **Advantages and disadvantages of cuBlas**
 **Advantages:**
+
 - Utilizes the parallel processing power of the GPU, significantly speeding up matrix multiplication for large matrices.
 - Suitable for large-scale computations and high-performance computing tasks.
 
 **Disadvantages:**
 - Requires careful management of device memory, including allocation, data transfer, and deallocation.
 - Requires a compatible GPU and appropriate drivers, limiting portability to systems with the necessary hardware.
-### Performence Comparison
+### **Performence Comparison**
+
 - OpenBLAS will generally be slower, especially for large matrices, due to the limited computational power and memory bandwidth of the CPU.
 - cuBLAS leverages the massive parallelism and high memory bandwidth of the GPU, offering much faster execution for large matrices.
 - OpenBLAS performance scales poorly with matrix size compared to cuBLAS.
@@ -189,8 +237,7 @@ Key details:
 credit: siboehm.com
 </p>
 
-In the first kernel, each thread is assigned a unique entry in the result matrix 𝐶 using the grid, block, and thread hierarchy. Each thread computes the dot product of the corresponding row of 𝐴 and column of B, writing the result to 𝐶
-C. Since each thread writes to a unique location in C, no synchronization is needed. The kernel is launched accordingly.
+In the first kernel, each thread is assigned a unique entry in the result matrix 𝐶 using the grid, block, and thread hierarchy. Each thread computes the dot product of the corresponding row of 𝐴 and column of B, writing the result to C. Since each thread writes to a unique location in C, no synchronization is needed. The kernel is launched accordingly.
 ```cpp
 // create as many blocks as necessary to map all of C
 dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32), 1);
@@ -235,6 +282,7 @@ credit: siboehm.com
 ### **2. Kernel 5: Increasing Arithmetic Intensity via 2D Blocktiling**
 
 loop structure looks like this:
+
 ![cuda]("\SUSTech-Courses\CS205-C++\project5\img\loop_structure.png")
 <p align="center">
 credit: siboehm.com
@@ -265,7 +313,7 @@ The resulting performance is 16 TFLOPs, a 2x improvement. Memory access calculat
 - Shared Memory (SMEM): K/4
 Performance is improving, but warp stalls due to memory pipeline congestion are still frequent. In kernel 6, two measures will be taken to address this: transposing matrices A to enable auto-vectorization of SMEM loads, and ensuring alignment of GMEM accesses for the compiler.
 
-### **Build OpenCV with DNN and CUDA for GPU-Accelerated Face Detection**
+### **V. Build OpenCV with DNN and CUDA for GPU-Accelerated Face Detection**
 
 GPU can be used in Opencv to accelerate the speed of reading and processing images. The user created a script to verify that OpenCV can utilize a GPU-accelerated Caffe model for face detection. The script:
 
@@ -327,13 +375,13 @@ int main() {
 ```
 Test Image:
 
-![opencv]("\SUSTech-Courses\CS205-C++\porject5\img\opencv.png")
+![opencv]("\SUSTech-Courses\CS205-C++\project5\img\opencv.png")
 
 
 ## Reference
-1. siboehm, December 2022, How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog
+1. Siboehm, December 2022, How to Optimize a CUDA Matmul Kernel for cuBLAS-like Performance: a Worklog
 [siboehm](https://siboehm.com/articles/22/CUDA-MMM).
-2. geekforgeek, Introduction to CUDA Programming, 14 Mar, 2023
+2. Geekforgeek, Introduction to CUDA Programming, 14 Mar, 2023
 [geekforgeek](https://www.geeksforgeeks.org/introduction-to-cuda-programming/).
 3. Amos Stailey-Young, Mar 1, 2024, Build OpenCV with DNN and CUDA for GPU-Accelerated Face Detection, 
 [geekforgeek](https://medium.com/@amosstaileyyoung/build-opencv-with-dnn-and-cuda-for-gpu-accelerated-face-detection-27a3cdc7e9ce/).
