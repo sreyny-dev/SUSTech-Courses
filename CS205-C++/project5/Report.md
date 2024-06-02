@@ -147,6 +147,7 @@ void matrixMultiplyCuBLAS(int N) {
 }
 ```
 **Result**
+
 ![cuda](https://github.com/sreyny1902/SUSTech-Courses/blob/main/CS205-C%2B%2B/project5/img/cublas.png)
 ### Advantages and disadvantages of openBlas
 **Advantages:**
